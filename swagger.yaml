@@ -1,0 +1,518 @@
+openapi: 3.0.3
+info:
+  title: Yprof API
+  version: 1.0.0
+paths:
+  /promo/:
+    get:
+      operationId: promo_list
+      description: Получение краткой информации (без информации об участниках и призах)
+        обо всех промоакциях
+      tags:
+      - promo
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PromotionWithoutDetail'
+          description: ''
+    post:
+      operationId: promo_create
+      description: |-
+        Добавление промоакции с возможностью указания названия (name), описания (description)
+        Описание – не обязательный параметр, название – обязательный
+      tags:
+      - promo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionWithoutDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PromotionWithoutDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PromotionWithoutDetail'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: integer
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /promo/{id}/:
+    get:
+      operationId: promo_retrieve
+      description: Получение полной информации (с информацией об участниках и призах)
+        о промоакции по идентификатору
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      tags:
+      - promo
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionFullDetail'
+          description: ''
+    put:
+      operationId: promo_update
+      description: |-
+        Редактирование промо-акции по идентификатору промо-акции
+        Редактировать можно только свойства name, description
+        Удалить имя таким образом нельзя, описание – можно
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      tags:
+      - promo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionWithoutDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PromotionWithoutDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PromotionWithoutDetail'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '206':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionWithoutDetail'
+          description: ''
+    delete:
+      operationId: promo_destroy
+      description: Удаление промоакции по идентификатору
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      tags:
+      - promo
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /promo/{id}/participant/:
+    post:
+      operationId: promo_participant_create
+      description: Добавление участника в промоакцию по идентификатору промоакции
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      tags:
+      - promo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Participant'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Participant'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Participant'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: integer
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /promo/{id}/participant/{participant_id}/:
+    delete:
+      operationId: promo_participant_destroy
+      description: Удаление участника из промоакции по идентификаторам промоакции
+        и участника
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      - in: path
+        name: participant_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - promo
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /promo/{id}/participant/{prize_id}/:
+    delete:
+      operationId: promo_participant_destroy_2
+      description: Удаление приза из промоакции по идентификаторам промоакции и приза
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      - in: path
+        name: prize_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - promo
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /promo/{id}/prize/:
+    post:
+      operationId: promo_prize_create
+      description: Добавление приза в промоакцию по идентификатору промоакции
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      tags:
+      - promo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Prize'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Prize'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Prize'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                type: integer
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /promo/{id}/rafle/:
+    post:
+      operationId: promo_rafle_create
+      description: Проведение розыгрыша призов в промоакции по идентификатору промоакции
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promotion.
+        required: true
+      tags:
+      - promo
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    Participant:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+      required:
+      - id
+      - name
+    Prize:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        description:
+          type: string
+      required:
+      - description
+      - id
+    PromotionFullDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+        description:
+          type: string
+        prizes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Prize'
+          readOnly: true
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+          readOnly: true
+      required:
+      - id
+      - name
+      - participants
+      - prizes
+    PromotionWithoutDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+        description:
+          type: string
+      required:
+      - id
+      - name
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
